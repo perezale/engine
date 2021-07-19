@@ -63,6 +63,10 @@
 #define DISABLE_BEST_MATCH 256
 #define ENABLE_REPORT_IDENTIFIED 512
 
+#define LDB_CLIENT_MODE
+#define LDB_HOST "localhost"
+#define LDB_PORT 2221
+
 extern uint64_t engine_flags;
 
 extern char SCANOSS_VERSION[7];

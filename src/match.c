@@ -32,6 +32,9 @@
 #include "rank.h"
 #include "decrypt.h"
 
+#include "ldb_client.h"
+
+
 bool first_file = true;
 const char *matchtypes[] = {"none", "url", "file", "snippet"};
 bool match_extensions = false;
@@ -348,6 +351,7 @@ match_data *matches, component_name_rank *component_rank, int rank_id, uint8_t *
 	add_match(0, match, matches, false);
 }
 
+
 match_data *load_matches(scan_data *scan)
 {
 	strcpy(scan->line_ranges, "all");
@@ -389,8 +393,38 @@ match_data *load_matches(scan_data *scan)
 	/* Snippet and url match should look for the matching md5 in urls */
 	if (scan->match_type != file)
 	{
+#ifndef LDB_CLIENT_MODE
 		records = ldb_fetch_recordset(NULL, oss_url, scan->match_ptr, false, handle_url_record, (void *) matches);
 		scanlog("URL recordset contains %u records\n", records);
+#else
+		engine_funtion_t f;
+		f.type = GET_URL_RECORDS;
+		memset(f.key,0,sizeof(f.key));
+		memcpy(f.key, scan->match_ptr, sizeof(f.key));
+		ldb_response_t r = ldb_socket_request(LDB_HOST, LDB_PORT, &f);
+		
+		ldb_recorset_buffet_t buffer;
+		memset(&buffer, 0, sizeof(ldb_recorset_buffet_t));
+		memcpy(&buffer,r.response, r.response_size);
+		records = buffer.index;
+		for(uint8_t i =0; i < buffer.index; i++)
+		{
+			struct match_data match = match_init();
+			match = fill_match(NULL, NULL, buffer.records[i].data);
+
+			/* Save match component id */
+			memcpy(match.url_md5, buffer.records[i].md5, MD5_LEN);
+			memcpy(match.file_md5, buffer.records[i].md5, MD5_LEN);
+			//memcpy(match.url_md5 + LDB_KEY_LN, subkey, subkey_ln);
+			//memcpy(match.file_md5, match.url_md5, MD5_LEN);
+			add_match(-1, match, matches, true);
+			fprintf(stderr, "match: %s", match.url);
+		}
+
+	//	url_records_process(r.response+4, matches);
+		if (r.response_size)
+			free(r.response);
+#endif
 	}
 
 	if (!records)

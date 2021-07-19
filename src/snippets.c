@@ -28,6 +28,8 @@
 #include "ldb.h"
 #include "decrypt.h"
 
+#include "ldb_client.h"
+
 /* Set map hits to zero for the given match */
 void clear_hits(uint8_t *match)
 {
@@ -63,15 +65,24 @@ static bool shortest_path_handler(uint8_t *key, uint8_t *subkey, int subkey_ln, 
 /* Returns the length of the shortest path among files matching md5 */
 int get_shortest_path(uint8_t *md5)
 {
+	int out = 0;
 	/* Direct component match has a top priority */
 	if (ldb_key_exists(oss_url, md5)) return 1;
 
+#ifndef LDB_CLIENT_MODE
 	int *shortest = calloc(1, sizeof(int));
 	ldb_fetch_recordset(NULL, oss_file, md5, false, shortest_path_handler, (void *) shortest);
-
-	int out = *shortest;
+	out = *shortest;
 	free(shortest);
-
+#else
+	engine_funtion_t f;
+	f.type = SHORTEST_PATH;
+	memcpy(f.key, md5, sizeof(f.key));
+	ldb_response_t r = 	ldb_socket_request(LDB_HOST, LDB_PORT, &f);
+	memcpy(&out, r.response, r.response_size);
+	if (r.response_size)
+		free(r.response);
+#endif
 	return out;
 }
 
@@ -468,9 +479,19 @@ matchtype ldb_scan_snippets(scan_data *scan) {
 		wfp_invert(scan->hashes[i], wfp);
 
 		/* Get all file IDs for given wfp */
+#ifndef LDB_CLIENT_MODE	
 		uint32_write(md5_set, 0);
 		ldb_fetch_recordset(NULL, oss_wfp, wfp, false, get_all_file_ids, (void *) md5_set);
-
+#else
+		engine_funtion_t f;
+		f.type = GET_ALL_FILE_IDS;
+		memset(f.key,0,sizeof(f.key));
+		memcpy(f.key, wfp, sizeof(wfp));
+		ldb_response_t r = ldb_socket_request(LDB_HOST, LDB_PORT, &f);
+		memcpy(md5_set, r.response, r.response_size);	
+		if (r.response_size)
+			free(r.response);
+#endif
 		/* md5_set starts with a 32-bit item count, followed by all 16-byte records */
 		uint32_t md5s_ln = uint32_read(md5_set);
 		uint8_t *md5s = md5_set + 4;
