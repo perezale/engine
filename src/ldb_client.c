@@ -54,24 +54,23 @@ ldb_response_t ldb_socket_request(char * ip, int port, engine_funtion_t * req)
     {
         fprintf(stderr,"ERROR writing to socket");
         return resp;
-    } 
-    n = read(sockfd, &resp, sizeof(resp.type)+sizeof(resp.response_size));
+    }
+
+    n = read(sockfd, &resp, 3);//sizeof(resp.type) + sizeof(resp.response_size));
     if (n > 0 && resp.type == req->type) 
     {
         resp.response = calloc(resp.response_size + 1, sizeof(uint8_t));
         n = 0;
         while (n < resp.response_size)
         {
-            int chunk = read(sockfd, resp.response + n, resp.response_size);
+            int chunk = read(sockfd, resp.response + n, resp.response_size-n);
             n += chunk;
-            
+            //fprintf(stderr, "read %u/%u\n",n,resp.response_size);
             if (chunk <= 0)
             {
                 fprintf(stderr, "exit\n");
                 break;
             }
-
-            fprintf(stderr,"resp debug: %d / %d \r\n", resp.response_size, n);
         }
         
     }

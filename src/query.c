@@ -26,7 +26,7 @@
 #include "ldb.h"
 #include "scanoss.h"
 #include "decrypt.h"
-
+#include "ldb_client.h"
 /* Obtain the first file name for the given file MD5 hash */
 char *get_filename(char *md5)
 {
@@ -78,6 +78,8 @@ void get_url_record(uint8_t *md5, uint8_t *record)
 	/* Erase byte count */
 	uint32_write(record, 0);
 
+
+#ifndef LDB_CLIENT_MODE
 	/* Fetch record */
 	ldb_fetch_recordset(NULL, oss_url, md5, false, ldb_get_first_url_not_ignored, (void *) record);
 
@@ -88,6 +90,27 @@ void get_url_record(uint8_t *md5, uint8_t *record)
 		memmove(record, record+4, recln);
 		record[recln] = 0;
 	}
+#else
+		engine_funtion_t f;
+		f.type = LDB_GET_RECORDS;
+		f.table = TABLE_URLS;
+		f.records_qty = 10;
+		memset(f.key,0,sizeof(f.key));
+		memcpy(f.key, md5, sizeof(f.key));
+		ldb_response_t r = ldb_socket_request(LDB_HOST, LDB_PORT, &f);
+		ldb_recorset_buffet_t buffer = {.index = (uint16_t*) r.response, .records = (ldb_recorset_t *) (r.response + sizeof(uint16_t))};
+
+		for (uint32_t i = 0; i < *buffer.index; i++)
+		{
+			if(!ignored_asset_match(buffer.records[i].data))
+			{
+				memcpy(record, buffer.records[i].data, buffer.records[i].len);
+				break;
+			}
+		}
+#endif
+
+
 
 }
 

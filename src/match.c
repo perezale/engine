@@ -398,16 +398,20 @@ match_data *load_matches(scan_data *scan)
 		scanlog("URL recordset contains %u records\n", records);
 #else
 		engine_funtion_t f;
-		f.type = GET_URL_RECORDS;
+		f.type = LDB_GET_RECORDS;
+		f.table = (uint8_t) TABLE_URLS;
+		f.records_qty = 30;
 		memset(f.key,0,sizeof(f.key));
 		memcpy(f.key, scan->match_ptr, sizeof(f.key));
 		ldb_response_t r = ldb_socket_request(LDB_HOST, LDB_PORT, &f);
 		
-		ldb_recorset_buffet_t buffer;
-		memset(&buffer, 0, sizeof(ldb_recorset_buffet_t));
-		memcpy(&buffer,r.response, r.response_size);
-		records = buffer.index;
-		for(uint8_t i =0; i < buffer.index; i++)
+		ldb_recorset_buffet_t buffer = {.index = (uint16_t*) r.response, .records = (ldb_recorset_t *) (r.response + sizeof(uint16_t))};
+		//memset(&buffer, 0, sizeof(ldb_recorset_buffet_t));
+		//memcpy(&buffer,r.response, r.response_size);
+
+		fprintf(stderr, "<<<<DEBUG: %u / %u---- %s-----%s>>>>>>>>>>>\n", *buffer.index, r.response_size, (char*) buffer.records[0].data ,md5_hex(buffer.records[0].md5) );
+		records = *buffer.index;
+		for(uint8_t i =0; i < *buffer.index; i++)
 		{
 			struct match_data match = match_init();
 			match = fill_match(NULL, NULL, buffer.records[i].data);
@@ -429,9 +433,19 @@ match_data *load_matches(scan_data *scan)
 
 	if (!records)
 	{
-
+#ifndef LDB_CLIENT_MODE
 		file_recordset *files = calloc(2 * FETCH_MAX_FILES, sizeof(file_recordset));
 		records = ldb_fetch_recordset(NULL, oss_file, scan->match_ptr, false, collect_all_files, (void *) files);
+#else
+		engine_funtion_t f;
+		f.table = TABLE_FILES;
+		f.type = COLLECT_ALL_FILES;
+		memset(f.key,0,sizeof(f.key));
+		memcpy(f.key, scan->match_ptr, sizeof(f.key));
+		ldb_response_t r = ldb_socket_request(LDB_HOST, LDB_PORT, &f);
+		file_recordset *files = (file_recordset *) r.response;
+		records = r.response_size / sizeof(file_recordset);
+#endif
 
 		if (records)
 		{
@@ -527,8 +541,9 @@ match_data *load_matches(scan_data *scan)
 		}
 		/* Add version ranges to selected match */
 		add_versions(scan, matches, files, records);
-
+#ifndef LDB_CLIENT_MODE
 		free(files);
+#endif
 	}
 
 	if (records) return matches;

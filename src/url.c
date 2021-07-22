@@ -56,39 +56,4 @@ bool handle_url_record(uint8_t *key, uint8_t *subkey, int subkey_ln, uint8_t *ra
 	return false;
 }
 
-uint32_t url_records_process(uint8_t * buffer, match_data *matches)
-{
-	char * actual = (char *) buffer;
-	char * chunk_end = strchr(actual, '$');
-	char * end = strrchr(actual,'$');
-	uint32_t matches_count = 0;
-	while (actual < end)
-	{
-		int len = chunk_end - actual;
-		
-		if (len <=0)
-			break;
-		
-		uint8_t data [len+1];
-		memset(data,0,len+1);
-		memcpy(data, actual, len);
-		
-		fprintf(stderr,"%s\n", (char*) data);
-		struct match_data match = match_init();
-		match = fill_match(NULL, NULL, data);
-
-		/* Save match component id */
-		//memcpy(match.url_md5, key, LDB_KEY_LN);
-		//memcpy(match.url_md5 + LDB_KEY_LN, subkey, subkey_ln);
-		//memcpy(match.file_md5, match.url_md5, MD5_LEN);
-		add_match(-1, match, matches, true);
-		matches_count++;
-		actual = chunk_end + 1;
-		chunk_end = strchr(actual, '$');
-
-	}
-
-	return matches_count;
-
-}
 
