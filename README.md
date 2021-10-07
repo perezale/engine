@@ -46,7 +46,7 @@ Configuration:
 * -b FILE  Ignore matches to assets specified in the provided JSON SBOM (CycloneDX/SPDX2.2 JSON format)
 
 Options:
-* -t  Tests engine performance
+* -tm=X,n=Y  Tests engine performance. "X" is the number of files to emulate, and "Y" is the number of snippets per emulated file.
 * -v  Display version and exit
 * -h  Display this help and exit
 * -d  Enable debugging information
