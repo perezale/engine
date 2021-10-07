@@ -242,7 +242,7 @@ int main(int argc, char **argv)
 	int option;
 	bool invalid_argument = false;
 
-	while ((option = getopt(argc, argv, ":f:s:b:c:k:a:F:l:n:i:wtvhedq")) != -1)
+	while ((option = getopt(argc, argv, ":f:s:b:c:k:a:F:l:n:i:t:wvhedq")) != -1)
 	{
 		/* Check valid alpha is entered */
 		if (optarg)
@@ -306,10 +306,22 @@ int main(int argc, char **argv)
 				break;
 
 			case 't':
-				scan_benchmark();
+			{
+				int mi = 0;
+				int ni = 0;
+				if (optarg)
+				{
+					char * m = strstr(optarg,"m=");
+					char * n = strstr(optarg,"n=");
+					if (m)
+						mi = atoi(m+2);
+					if (n)
+						ni = atoi(n+2);
+				}
+				scan_benchmark(mi, ni);
 				exit(EXIT_SUCCESS);
 				break;
-
+			}
 			case 'v':
 				printf("scanoss-%s\n", SCANOSS_VERSION);
 				exit(EXIT_SUCCESS);

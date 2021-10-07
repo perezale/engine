@@ -82,10 +82,10 @@ void progress(char *prompt, size_t count, size_t max, bool percent)
 	progress_timer = tmp;
 
 	if (percent)
-		printf("%s%.2f%%\r", prompt, ((double)count / (double)max) * 100);
+		fprintf(stderr,"%s%.2f%%\r", prompt, ((double)count / (double)max) * 100);
 	else
-		printf("%s%lu\r", prompt, count);
-	fflush(stdout);
+		fprintf(stderr, "%s%lu\r", prompt, count);
+	fflush(stderr);
 }
 
 void slow_query_log(scan_data *scan)
@@ -139,10 +139,16 @@ void map_dump(scan_data *scan)
 	fclose(map);
 }
 
-void scan_benchmark()
+void scan_benchmark(int n, int m)
 {
-	uint32_t total_hashes = 100; // Number of hashes per pseudo file
-	uint32_t total_files = 100; // Number of pseudo hashes to scan
+	if (n <= 0) //Default value
+		n = 100;
+		
+	if (m <= 0) //Default value
+		m = 100;
+
+	uint32_t total_hashes = m; // Number of hashes per pseudo file
+	uint32_t total_files = n; // Number of pseudo hashes to scan
 	double elapsed = microseconds_now();
 
 	/* Init random number generator */
@@ -170,14 +176,13 @@ void scan_benchmark()
 		ldb_scan_snippets(&scan);
 		scan_data_free(scan);
 	}
-	printf("Analysis complete\n");
-
 	/* Calculate elapsed time */
 	int elapsed_ms = (microseconds_now() - elapsed) / 1000;
-
-	printf ("Test executed in %dms\n", elapsed_ms);
-	printf ("Average file scanning time is %dms\n", elapsed_ms / total_files);
-	printf ("Performance is %d fingerprints per second\n", (total_files * total_hashes * 1000) / elapsed_ms);
+	fprintf(stderr," Analysis complete\n");
+	fprintf(stderr, "Test executed in %dms\n", elapsed_ms);
+	fprintf(stderr, "Average file scanning time is %dms\n", elapsed_ms / total_files);
+	fprintf(stderr, "Performance is %d fingerprints per second\n", (total_files * total_hashes * 1000) / elapsed_ms);
+	printf("%d,%d\n", elapsed_ms, elapsed_ms / total_files);
 
 }
 

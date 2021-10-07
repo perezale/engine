@@ -12,7 +12,7 @@ extern bool quiet;
 void scanlog(const char *fmt, ...);
 void map_dump(scan_data *scan);
 long microseconds_now(void);
-void scan_benchmark(void);
+void scan_benchmark(int m, int n);
 void slow_query_log(scan_data *scan);
 
 
