@@ -39,7 +39,7 @@ jobs:
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
       with:
-        name: ${{ steps.version.outputs.version }}
+        name: scanoss
         path: |
           scanoss.tar.gz
         retention-days: 5
