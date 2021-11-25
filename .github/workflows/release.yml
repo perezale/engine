@@ -23,6 +23,13 @@ jobs:
           path: dist
       - name: test output
         run: echo $(ls .)
+
+      - name: Uncompress file
+        run: tar -xzvf dist/scanoss.tar.gz
+
+      - name: test output
+        run: echo $(ls .)
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
