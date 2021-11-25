@@ -33,17 +33,12 @@ jobs:
       run: |
        echo ${{ steps.version.outputs.version }}
 
-    - uses: singingwolfboy/build-dpkg-stretch@v1
-      id: build
-      with:
-        args: --unsigned-source --unsigned-changes
-
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
       with:
         name: dist
         path: |
-          ${{ steps.build.outputs.filename }}
+          scanoss
           LICENSE
         retention-days: 5
 
