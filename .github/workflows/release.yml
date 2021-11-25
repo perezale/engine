@@ -25,7 +25,7 @@ jobs:
         run: echo $(ls .)
 
       - name: Uncompress file
-        run: tar -xzvf dist/scanoss.tar.gz
+        run: tar -xzvf dist/scanoss.tar.gz -C dist
 
       - name: test output
         run: echo $(ls .)
