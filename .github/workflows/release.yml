@@ -1,0 +1,38 @@
+---
+name: "tagged-release"
+
+on:
+  push:
+    tags:
+      - "*"
+
+jobs:
+  tagged-release:
+    name: "Tagged Release"
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          workflow: build.yml
+          workflow_conclusion: success
+          # Artifact name
+          name: scanoss
+          # Destination path
+          path: dist
+      - name: test output
+        run: echo $(ls .)
+
+      - name: Uncompress file
+        run: tar -xzvf dist/scanoss.tar.gz -C dist
+
+      - name: test output
+        run: echo $(ls .)
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            dist/scanoss.tar.gz
