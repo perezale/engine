@@ -33,24 +33,17 @@ jobs:
       run: |
        echo ${{ steps.version.outputs.version }}
 
-    - name: Build Debian package
-      uses: dawidd6/action-debian-package@v1
-      with:
-        # Optional, relative to workspace directory
-        #source_directory: lolcat
-        # Optional, relative to workspace directory
-        artifacts_directory: dist
-        # Optional, value from `debian/changelog` is used if not defined
-        # os_distribution: bionic
-        # Optional, target architecture, defaults to amd64
-        cpu_architecture: amd64
+    - uses: singingwolfboy/build-dpkg-buster@v1
+        id: build
+        with:
+          args: --unsigned-source --unsigned-changes
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
       with:
         name: dist
         path: |
-          scanoss
+          ${{ steps.build.outputs.scanoss }}
           LICENSE
         retention-days: 5
 
