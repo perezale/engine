@@ -35,5 +35,4 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            dist/LICENSE
-            dist/scanoss
+            dist/scanoss.tar.gz
