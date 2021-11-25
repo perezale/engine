@@ -33,12 +33,20 @@ jobs:
       run: |
        echo ${{ steps.version.outputs.version }}
 
+    - name: 'Tar files'
+      run: tar -cvf scanoss.tar scanoss LICENSE
+
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-artifact
+        path: my_files.tar    
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
       with:
         name: dist
         path: |
-          scanoss
-          LICENSE
+          scanoss.tar
         retention-days: 5
 
