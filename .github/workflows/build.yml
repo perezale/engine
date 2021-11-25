@@ -33,7 +33,7 @@ jobs:
       run: |
        echo ${{ steps.version.outputs.version }}
 
-    - uses: singingwolfboy/build-dpkg-buster@v1
+    - uses: singingwolfboy/build-dpkg-stretch@v1
       id: build
       with:
         args: --unsigned-source --unsigned-changes
@@ -43,7 +43,7 @@ jobs:
       with:
         name: dist
         path: |
-          ${{ steps.build.outputs.scanoss }}
+          ${{ steps.build.outputs.filename }}
           LICENSE
         retention-days: 5
 
