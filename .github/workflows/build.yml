@@ -34,9 +34,9 @@ jobs:
        echo ${{ steps.version.outputs.version }}
 
     - uses: singingwolfboy/build-dpkg-buster@v1
-        id: build
-        with:
-          args: --unsigned-source --unsigned-changes
+      id: build
+      with:
+        args: --unsigned-source --unsigned-changes
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
