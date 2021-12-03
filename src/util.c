@@ -71,7 +71,7 @@ bool stristart(char *a, char *b)
  * @brief Reverse an uint32 number
  * @param data pointer to daa buffer to be inverted
  */
-void uint32_reverse(uint8_t *data)TODO
+void uint32_reverse(uint8_t *data)
 {
 	uint8_t tmp = data[0];
 	data[0] = data[3];
