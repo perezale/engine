@@ -18,21 +18,27 @@ jobs:
           workflow: build.yml
           workflow_conclusion: success
           # Artifact name
-          name: scanoss
           # Destination path
-          path: dist
-      - name: test output
-        run: echo $(ls .)
+          path: .
 
-      - name: Uncompress file
-        run: tar -xzvf dist/scanoss.tar.gz -C dist
+      # - name: Uncompress file
+      #   run: tar -xzvf dist/scanoss*/* -C dist
 
-      - name: test output
-        run: echo $(ls .)
+      # - name: test output
+      #   run: echo $(ls dist)
+
+      # - name: Set release folder
+      #   run: echo "::set-output name=RELEASE_FOLDER::$(ls dist)"
+      #   id: set-release-folder
+      
+      # - name: test output
+      #   run: echo $(ls "dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}/")
+
+      # - name: Compress release files
+      #   run: tar -czvf ${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}.tar.gz dist/scanoss*/* 
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          files: |
-            dist/scanoss.tar.gz
+          files: "**.tar.gz"
