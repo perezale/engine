@@ -23,8 +23,8 @@ jobs:
       - name: test output
         run: echo $(ls .)
 
-      - name: Uncompress file
-        run: tar -xzvf dist/scanoss* -C dist
+      # - name: Uncompress file
+      #   run: tar -xzvf dist/scanoss*/* -C dist
 
       - name: test output
         run: echo $(ls .)
