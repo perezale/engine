@@ -42,7 +42,7 @@ jobs:
       with:
         name: ${{ steps.version.outputs.version }}-linux-amd64.tar.gz
         path: |
-          "scanoss"
-          "LICENSE"
+          "./scanoss"
+          "./LICENSE"
         retention-days: 5
 
