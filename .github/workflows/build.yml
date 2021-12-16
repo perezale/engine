@@ -6,7 +6,6 @@ on:
     branches: [ 'master' ]
   push:
     branches: [ 'master' ]
-  push:
     tags:
       - "*"
 
