@@ -27,9 +27,13 @@ jobs:
       - name: test output
         run: echo $(ls dist)
 
+      - name: Set release folder
+        run: echo "::set-output name=RELEASE_FOLDER::$(ls dist)
+        id: set-release-folder
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            dist/*
+            "dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}"/*
