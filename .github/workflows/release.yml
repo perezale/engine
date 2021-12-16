@@ -25,7 +25,7 @@ jobs:
         run: echo $(ls .)
 
       - name: Uncompress file
-        run: tar -xzvf dist/scanoss.tar.gz -C dist
+        run: tar -xzvf dist/scanoss* -C dist
 
       - name: test output
         run: echo $(ls .)
@@ -35,4 +35,4 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            dist/scanoss.tar.gz
+            dist/scanoss*
