@@ -28,7 +28,7 @@ jobs:
         run: echo $(ls dist)
 
       - name: Set release folder
-        run: echo "::set-output name=RELEASE_FOLDER::$(ls dist)
+        run: echo "::set-output name=RELEASE_FOLDER::$(ls dist)"
         id: set-release-folder
 
       - uses: "marvinpinto/action-automatic-releases@latest"
