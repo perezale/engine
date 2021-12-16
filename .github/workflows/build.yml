@@ -35,13 +35,13 @@ jobs:
        echo ${{ steps.version.outputs.version }}
 
     - name: 'Tar files'
-      run: "tar -czvf ${{ steps.version.outputs.version }}-linux-amd64.tar.gz scanoss LICENSE"
+      run: "tar -czvf /tmp/${{ steps.version.outputs.version }}-linux-amd64.tar.gz scanoss LICENSE"
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
       with:
         name: scanoss
         path: |
-          "${{ steps.version.outputs.version }}-linux-amd64.tar.gz"
+          "/tmp/${{ steps.version.outputs.version }}-linux-amd64.tar.gz"
         retention-days: 5
 
