@@ -20,18 +20,16 @@ jobs:
           # Artifact name
           # Destination path
           path: dist
-      - name: test output
-        run: echo $(ls .)
 
       # - name: Uncompress file
       #   run: tar -xzvf dist/scanoss*/* -C dist
 
       - name: test output
-        run: echo $(ls .)
+        run: echo $(ls dist)
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            dist/scanoss*
+            dist/*
