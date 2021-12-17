@@ -30,6 +30,9 @@ jobs:
       - name: Set release folder
         run: echo "::set-output name=RELEASE_FOLDER::$(ls /tmp/dist)"
         id: set-release-folder
+      
+      - name: test output
+        run: echo $(ls "/tmp/dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}/")
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
