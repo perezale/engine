@@ -19,25 +19,23 @@ jobs:
           workflow_conclusion: success
           # Artifact name
           # Destination path
-          path: /tmp/dist
+          path: dist
 
       # - name: Uncompress file
       #   run: tar -xzvf dist/scanoss*/* -C dist
 
       - name: test output
-        run: echo $(ls /tmp/dist)
+        run: echo $(ls dist)
 
       - name: Set release folder
-        run: echo "::set-output name=RELEASE_FOLDER::$(ls /tmp/dist)"
+        run: echo "::set-output name=RELEASE_FOLDER::$(ls dist)"
         id: set-release-folder
       
       - name: test output
-        run: echo $(ls "/tmp/dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}/")
+        run: echo $(ls "dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}/")
 
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          files: |
-            "/tmp/dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}/scanoss"
-            "/tmp/dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}/LICENSE"
+          files: "dist/**"
