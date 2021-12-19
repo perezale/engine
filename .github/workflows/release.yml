@@ -34,8 +34,11 @@ jobs:
       - name: test output
         run: echo $(ls "dist/${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}/")
 
+      - name: Compress release files
+        run: tar -czvf ${{ steps.set-release-folder.outputs.RELEASE_FOLDER }}.tar.gz dist/scanoss*/* 
+
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
-          files: "dist/**"
+          files: "**.tar.gz"
