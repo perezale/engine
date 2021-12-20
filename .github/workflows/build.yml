@@ -43,12 +43,13 @@ jobs:
         mv scanoss dist/
         mv LICENSE dist/
 
+    - name: Tar files
+      run: tar -czvf ${{ steps.version.outputs.version }}-linux-amd64.tar.gz dist/**
+
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.4
       with:
-        name: ${{ steps.version.outputs.version }}-linux-amd64
-        path: |
-          dist/
-      
+        name: ${{ steps.version.outputs.version }}-linux-amd64.tar.gz
+        path: ${{ steps.version.outputs.version }}-linux-amd64.tar.gz
         retention-days: 5
 
